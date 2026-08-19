@@ -4,7 +4,7 @@ A deliberately small FastAPI app used to demo **GitHub Copilot across all four s
 
 | Surface | What it shows |
 | --- | --- |
-| **Copilot in the IDE** (VS Code) | Inline completions, Chat, Edits, `@workspace` grounding |
+| **Copilot in the IDE** (VS Code) | Inline completions, Chat, Agent mode, `@workspace` grounding |
 | **Copilot CLI** | Terminal-native agent: explore, fix, test, commit |
 | **GitHub Copilot App** | Multi-session orchestration, planning, parallel worktrees |
 | **Copilot Coding Agent** (cloud) | Assign an issue → agent opens a PR autonomously |

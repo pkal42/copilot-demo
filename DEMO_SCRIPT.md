@@ -48,7 +48,7 @@ Then point at `.github/copilot-instructions.md`:
 ---
 
 ## 2 · Copilot in the IDE ⚡ (4 minutes)
-**Theme: tight feedback loop. You stay in flow, Copilot fills the gaps.**
+**Theme: the agentic AI loop. You provide direction and review each result.**
 
 ### 2a. Inline completion (30s)
 Open `app/models.py`. Below `complete()`, start typing:
@@ -74,19 +74,21 @@ It should point at `TaskStore.list()` in `app/models.py`.
 > "It didn't grep for 'filter'. It reasoned across the route handler, the store,
 > and the frontend fetch call to find where the value goes missing."
 
-### 2c. Copilot Edits — multi-file fix (2 min)
-Switch to **Edits** mode. Add `app/models.py` and `tests/test_api.py`. Prompt:
+### 2c. Agent mode — multi-file fix (2 min)
+Switch to **Agent mode**. Add `app/models.py` and `tests/test_api.py`. Prompt:
 
 ```
 Fix the status filter in TaskStore.list so it filters by status when provided.
 Then remove the xfail marker from test_status_filter in tests/test_api.py.
 ```
 
-Review the diff **out loud** — this is the moment to model good behavior:
+Call out the loop as it works:
 
-> "I read every line before I accept. That's the job now."
+> "First it understands the request and gathers context. Then it plans, makes the
+> changes, uses tools to run the tests, and shows me the results."
 
-Accept. Run in the VS Code terminal:
+Inspect the diff and test output **out loud**. If anything is wrong, iterate with
+a follow-up prompt. Otherwise, approve the changes and run in the VS Code terminal:
 
 ```bash
 pytest -q
@@ -94,8 +96,11 @@ pytest -q
 
 5 passed. Refresh the browser, click "Open" — it works.
 
-**Land the point:** *IDE = you're driving, Copilot is your co-pilot on a
-30-second loop.*
+> "I still read every line before I approve. The agent accelerates the loop; human
+> review is the gate."
+
+**Land the point:** *IDE Agent mode = understand, plan, change, use tools, inspect,
+iterate, and approve — with you driving the loop.*
 
 ---
 
