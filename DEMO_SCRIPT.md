@@ -27,6 +27,9 @@ Have open and ready:
 
 **Pre-file these four issues** (script in §5) so the Coding Agent demo is one click.
 
+**Presenter rule:** Never wait silently. While an agent runs, always have a
+parallel narration or demo action ready, plus a pre-completed fallback.
+
 ---
 
 ## 1 · Framing (90 seconds)
@@ -122,11 +125,13 @@ conventions in .github/copilot-instructions.md — logic in TaskStore, a 404 for
 unknown ids, and a test. Add a delete button to the UI too. Run pytest when done.
 ```
 
-While it works, narrate what you see:
+While it works, review the diff and tool trace as they appear, and prepare the
+follow-up prompt or next CLI command:
 
 > "Watch the tool calls. It's reading `models.py`, reading `main.py`, checking
 > the instructions file, editing three files, then *running the tests itself*.
-> That last part matters — it verifies before it claims success."
+> That last part matters — it verifies before it claims success. While it runs,
+> I'm checking the diff and getting the next instruction ready."
 
 When it finishes:
 
@@ -167,7 +172,8 @@ Show the **plan** before any code is written.
 > "Plan mode is the guardrail. I approve the approach, *then* it writes code.
 > This is where you catch a wrong turn for free instead of in review."
 
-Approve it. While it runs, **start a second session in parallel**:
+Approve it. Immediately start a second session in parallel — do not wait for the
+first to finish:
 
 ```
 Add a GET /tasks/stats endpoint returning counts by status and by priority,
@@ -178,7 +184,8 @@ Now show the sidebar with two sessions running.
 
 > "Two agents, two isolated git worktrees, zero collisions. My working copy
 > hasn't moved. This is the part people underestimate — the bottleneck stops
-> being how fast Copilot writes code and becomes how fast I can review it."
+> being how fast Copilot writes code and becomes how fast I can review it. I can
+> compare the two plans while both agents work."
 
 Review one session's diff in the app, and merge/finish it.
 
@@ -205,8 +212,8 @@ Assign the issue to **Copilot**.
 > "That's it. No terminal, no editor, no laptop required. It spins up its own
 > cloud environment, clones the repo, reads the instructions file, and works."
 
-Show a **previously completed** run so you're not waiting on stage — open the PR
-it produced and walk through:
+Pre-stage a **previously completed** run so you're not waiting on stage. While the
+new run works, open that PR and use the issue/PR review flow to walk through:
 - The session log / progress timeline
 - The diff, and the tests it added
 - **CI green** on `.github/workflows/ci.yml`
