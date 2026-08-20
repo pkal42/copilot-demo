@@ -40,7 +40,6 @@ def test_missing_task_returns_404(client):
     assert client.get("/tasks/999").status_code == 404
 
 
-@pytest.mark.xfail(reason="Demo bug #1: status filter is not applied yet")
 def test_status_filter(client):
     client.post("/tasks", json={"title": "open one"})
     done_id = client.post("/tasks", json={"title": "done one"}).json()["id"]
@@ -48,3 +47,44 @@ def test_status_filter(client):
 
     open_tasks = client.get("/tasks?status=open").json()
     assert [t["title"] for t in open_tasks] == ["open one"]
+
+
+def test_search_matches_title(client):
+    client.post("/tasks", json={"title": "Write demo script"})
+    client.post("/tasks", json={"title": "Review pull request"})
+
+    tasks = client.get("/tasks?q=demo").json()
+    assert [t["title"] for t in tasks] == ["Write demo script"]
+
+
+def test_search_matches_description(client):
+    client.post(
+        "/tasks",
+        json={"title": "Docs", "description": "Explain the release process"},
+    )
+    client.post("/tasks", json={"title": "Tests", "description": "Add API coverage"})
+
+    tasks = client.get("/tasks?q=release").json()
+    assert [t["title"] for t in tasks] == ["Docs"]
+
+
+def test_search_is_case_insensitive(client):
+    client.post("/tasks", json={"title": "Ship Feature"})
+
+    tasks = client.get("/tasks?q=feature").json()
+    assert [t["title"] for t in tasks] == ["Ship Feature"]
+
+
+def test_search_no_matches(client):
+    client.post("/tasks", json={"title": "Write docs"})
+
+    assert client.get("/tasks?q=missing").json() == []
+
+
+def test_search_combines_with_status_filter(client):
+    client.post("/tasks", json={"title": "Fix API bug"})
+    done_id = client.post("/tasks", json={"title": "Fix UI bug"}).json()["id"]
+    client.post(f"/tasks/{done_id}/complete")
+
+    tasks = client.get("/tasks?status=open&q=fix").json()
+    assert [t["title"] for t in tasks] == ["Fix API bug"]
