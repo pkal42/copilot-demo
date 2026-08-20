@@ -101,8 +101,15 @@ pytest -q
 
 5 passed. Refresh the browser, click "Open" — it works.
 
-> "I still read every line before I approve. The agent accelerates the loop; human
-> review is the gate."
+Then run one explicit follow-up loop in Agent mode:
+
+```
+Now do one more pass: simplify any duplicated logic in this fix, keep behavior the
+same, and rerun only the related test.
+```
+
+> "This is the loop in practice: inspect → reprompt → re-run → re-inspect. I still
+> read every line before I approve."
 
 **Land the point:** *IDE Agent mode = understand, plan, change, use tools, inspect,
 iterate, and approve — with you driving the loop.*
