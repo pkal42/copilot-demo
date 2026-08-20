@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
@@ -14,8 +14,13 @@ def health() -> dict[str, str]:
 
 
 @app.get("/tasks", response_model=list[Task])
-def list_tasks(status: Optional[str] = None) -> list[Task]:
-    return store.list(status)
+def list_tasks(
+    status: Optional[str] = None,
+    search: Optional[str] = None,
+    sort: Optional[Literal["created_at", "title", "priority"]] = None,
+    order: Literal["asc", "desc"] = "asc",
+) -> list[Task]:
+    return store.list(status, search, sort, order)
 
 
 @app.post("/tasks", response_model=Task, status_code=201)

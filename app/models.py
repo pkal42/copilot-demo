@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel
 
@@ -43,9 +43,33 @@ class TaskStore:
         self._next_id += 1
         return task
 
-    def list(self, status: Optional[str] = None) -> list[Task]:
-        # BUG (demo #1): the status filter is accepted but never applied.
-        return list(self._tasks.values())
+    def list(
+        self,
+        status: Optional[str] = None,
+        search: Optional[str] = None,
+        sort: Optional[Literal["created_at", "title", "priority"]] = None,
+        order: Literal["asc", "desc"] = "asc",
+    ) -> list[Task]:
+        tasks = list(self._tasks.values())
+        if status is not None:
+            tasks = [task for task in tasks if task.status == status]
+        if search is not None:
+            query = search.casefold()
+            tasks = [
+                task
+                for task in tasks
+                if query in task.title.casefold() or query in task.description.casefold()
+            ]
+        if sort is not None:
+            key = (
+                (lambda task: task.created_at)
+                if sort == "created_at"
+                else (lambda task: task.title.casefold())
+                if sort == "title"
+                else lambda task: {"high": 0, "medium": 1, "low": 2}[task.priority]
+            )
+            tasks.sort(key=key, reverse=order == "desc")
+        return tasks
 
     def get(self, task_id: int) -> Optional[Task]:
         return self._tasks.get(task_id)

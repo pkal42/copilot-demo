@@ -46,6 +46,17 @@
     <button data-filter="">All</button>
     <button data-filter="open">Open</button>
     <button data-filter="done">Done</button>
+    <input id="search" placeholder="Search tasks" />
+    <select id="sort">
+      <option value="">Creation order</option>
+      <option value="created_at">Created</option>
+      <option value="title">Title</option>
+      <option value="priority">Priority</option>
+    </select>
+    <select id="order">
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
   </div>
 
   <ul id="list"></ul>
@@ -55,7 +66,16 @@
 let filter = "";
 
 async function load() {
-  const qs = filter ? `?status=${filter}` : "";
+  const params = new URLSearchParams();
+  const search = document.getElementById("search").value;
+  const sort = document.getElementById("sort").value;
+  if (filter) params.set("status", filter);
+  if (search) params.set("search", search);
+  if (sort) {
+    params.set("sort", sort);
+    params.set("order", document.getElementById("order").value);
+  }
+  const qs = params.size ? `?${params}` : "";
   const tasks = await (await fetch(`/tasks${qs}`)).json();
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -90,6 +110,9 @@ document.getElementById("new-task").onsubmit = async (e) => {
 for (const b of document.querySelectorAll(".filters button")) {
   b.onclick = () => { filter = b.dataset.filter; load(); };
 }
+document.getElementById("search").oninput = load;
+document.getElementById("sort").onchange = load;
+document.getElementById("order").onchange = load;
 
 load();
 </script>
