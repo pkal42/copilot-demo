@@ -52,6 +52,8 @@ Then point at `.github/copilot-instructions.md`:
 
 ## 2 · Copilot in the IDE ⚡ (4 minutes)
 **Theme: the agentic AI loop. You provide direction and review each result.**
+**Concept:** This is **human-in-the-loop** AI: shortest feedback cycle, highest
+control, with approval at every step.
 
 ### 2a. Inline completion (30s)
 Open `app/models.py`. Below `complete()`, start typing:
@@ -109,6 +111,8 @@ iterate, and approve — with you driving the loop.*
 
 ## 3 · Copilot CLI (4 minutes)
 **Theme: the terminal is a first-class agent surface. Multi-step, tool-using.**
+**Concept:** CLI is **workflow automation in context** — one agent can inspect,
+edit, run commands, and package results end-to-end.
 
 > "Now I'm leaving the editor. Some work isn't editing — it's exploring,
 > running, testing, committing. That's terminal work."
@@ -156,6 +160,8 @@ can wire into scripts, hooks, and CI.*
 
 ## 4 · GitHub Copilot App (4 minutes)
 **Theme: orchestration. Multiple isolated sessions, working in parallel.**
+**Concept:** The app is **parallel execution + review routing**: many isolated
+workstreams, one reviewer, predictable merges.
 
 > "Everything so far was one task at a time. Real work isn't like that."
 
@@ -196,6 +202,8 @@ directing work.*
 
 ## 5 · Copilot Coding Agent (cloud) (4 minutes)
 **Theme: fully autonomous. Delegate from anywhere, including your phone.**
+**Concept:** Cloud agent is **asynchronous delegation**: issues become queued work
+that returns as PRs through the same review and CI gates.
 
 Go to the Issues tab. Open the pre-filed issue:
 
@@ -230,6 +238,9 @@ you're doing something else.*
 ---
 
 ## 6 · Close (90 seconds)
+**Concept recap:** The surfaces are one system with different latency and control:
+inline assist (IDE), local agent execution (CLI), parallel orchestration (App),
+and backlog delegation (Cloud Agent).
 
 Put the four side by side:
 
