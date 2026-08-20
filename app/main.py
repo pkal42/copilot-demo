@@ -14,8 +14,8 @@ def health() -> dict[str, str]:
 
 
 @app.get("/tasks", response_model=list[Task])
-def list_tasks(status: Optional[str] = None) -> list[Task]:
-    return store.list(status)
+def list_tasks(status: Optional[str] = None, q: Optional[str] = None) -> list[Task]:
+    return store.list(status, q)
 
 
 @app.post("/tasks", response_model=Task, status_code=201)

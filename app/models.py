@@ -43,9 +43,19 @@ class TaskStore:
         self._next_id += 1
         return task
 
-    def list(self, status: Optional[str] = None) -> list[Task]:
-        # BUG (demo #1): the status filter is accepted but never applied.
-        return list(self._tasks.values())
+    def list(self, status: Optional[str] = None, q: Optional[str] = None) -> list[Task]:
+        tasks = list(self._tasks.values())
+        if status is not None:
+            tasks = [task for task in tasks if task.status == status]
+        query = q.strip().casefold() if q is not None else ""
+        if query:
+            tasks = [
+                task
+                for task in tasks
+                if query in task.title.casefold()
+                or query in task.description.casefold()
+            ]
+        return tasks
 
     def get(self, task_id: int) -> Optional[Task]:
         return self._tasks.get(task_id)
