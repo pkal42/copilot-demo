@@ -36,6 +36,67 @@ def test_complete_task(client):
     assert client.post(f"/tasks/{task_id}/complete").json()["status"] == "done"
 
 
+def test_update_task_preserves_unspecified_fields(client):
+    task = client.post(
+        "/tasks",
+        json={
+            "title": "Original title",
+            "description": "Original description",
+            "priority": "low",
+        },
+    ).json()
+
+    response = client.patch(
+        f"/tasks/{task['id']}",
+        json={"title": "Updated title"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["title"] == "Updated title"
+    assert response.json()["description"] == "Original description"
+    assert response.json()["priority"] == "low"
+
+
+def test_update_task_description_and_priority(client):
+    task_id = client.post("/tasks", json={"title": "Update me"}).json()["id"]
+
+    response = client.patch(
+        f"/tasks/{task_id}",
+        json={"description": "New description", "priority": "high"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["description"] == "New description"
+    assert response.json()["priority"] == "high"
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"title": "   "},
+        {"title": "x" * 121},
+        {"priority": "urgent"},
+        {"description": None},
+    ],
+)
+def test_update_task_rejects_invalid_input(client, payload):
+    task_id = client.post("/tasks", json={"title": "Valid task"}).json()["id"]
+
+    assert client.patch(f"/tasks/{task_id}", json=payload).status_code == 422
+
+
+@pytest.mark.parametrize("title", ["   ", "x" * 121])
+def test_create_task_reuses_title_constraints(client, title):
+    assert client.post("/tasks", json={"title": title}).status_code == 422
+
+
+def test_update_missing_task_returns_404(client):
+    response = client.patch("/tasks/999", json={"title": "Missing"})
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Task not found"}
+
+
 def test_missing_task_returns_404(client):
     assert client.get("/tasks/999").status_code == 404
 
