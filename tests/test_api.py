@@ -36,6 +36,33 @@ def test_complete_task(client):
     assert client.post(f"/tasks/{task_id}/complete").json()["status"] == "done"
 
 
+def test_reopen_completed_task(client):
+    task_id = client.post("/tasks", json={"title": "Ship it"}).json()["id"]
+    client.post(f"/tasks/{task_id}/complete")
+    assert client.post(f"/tasks/{task_id}/reopen").json()["status"] == "open"
+
+
+def test_reopen_open_task(client):
+    task_id = client.post("/tasks", json={"title": "Still open"}).json()["id"]
+    assert client.post(f"/tasks/{task_id}/reopen").json()["status"] == "open"
+
+
+def test_reopen_missing_task_returns_404(client):
+    assert client.post("/tasks/999/reopen").status_code == 404
+
+
+def test_task_stats(client):
+    open_id = client.post("/tasks", json={"title": "open"}).json()["id"]
+    done_id = client.post("/tasks", json={"title": "done"}).json()["id"]
+    client.post(f"/tasks/{done_id}/complete")
+
+    assert client.get("/tasks/stats").json() == {"open": 1, "done": 1, "total": 2}
+
+    client.post(f"/tasks/{open_id}/complete")
+    client.post(f"/tasks/{open_id}/reopen")
+    assert client.get("/tasks/stats").json() == {"open": 1, "done": 1, "total": 2}
+
+
 def test_missing_task_returns_404(client):
     assert client.get("/tasks/999").status_code == 404
 
