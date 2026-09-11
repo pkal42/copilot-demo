@@ -47,6 +47,7 @@
     <button data-filter="open">Open</button>
     <button data-filter="done">Done</button>
   </div>
+  <p class="sub" id="stats"></p>
 
   <ul id="list"></ul>
 </main>
@@ -54,7 +55,12 @@
 <script>
 let filter = "";
 
-async function loadStats() {}
+async function loadStats() {
+  const tasks = await (await fetch("/tasks")).json();
+  const open = tasks.filter((t) => t.status === "open").length;
+  const done = tasks.filter((t) => t.status === "done").length;
+  document.getElementById("stats").textContent = `Open: ${open} • Done: ${done}`;
+}
 
 async function refreshView() {
   await load();
