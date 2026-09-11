@@ -1,13 +1,32 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Annotated, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints, field_validator
+
+
+TaskTitle = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
+TaskPriority = Literal["low", "medium", "high"]
 
 
 class TaskCreate(BaseModel):
-    title: str
+    title: TaskTitle
     description: str = ""
-    priority: str = "medium"
+    priority: TaskPriority = "medium"
+
+
+class TaskUpdate(BaseModel):
+    title: Optional[TaskTitle] = None
+    description: Optional[str] = None
+    priority: Optional[TaskPriority] = None
+
+    @field_validator("title", "description", "priority", mode="before")
+    @classmethod
+    def reject_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("Field cannot be null")
+        return value
 
 
 class Task(BaseModel):
@@ -41,6 +60,14 @@ class TaskStore:
         )
         self._tasks[task.id] = task
         self._next_id += 1
+        return task
+
+    def update(self, task_id: int, payload: TaskUpdate) -> Optional[Task]:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return None
+        for field, value in payload.model_dump(exclude_unset=True).items():
+            setattr(task, field, value)
         return task
 
     def list(self, status: Optional[str] = None) -> list[Task]:

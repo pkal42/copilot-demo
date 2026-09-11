@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
-from app.models import Task, TaskCreate, store
+from app.models import Task, TaskCreate, TaskUpdate, store
 
 app = FastAPI(title="Copilot Demo — Task Tracker", version="0.1.0")
 
@@ -21,6 +21,14 @@ def list_tasks(status: Optional[str] = None) -> list[Task]:
 @app.post("/tasks", response_model=Task, status_code=201)
 def create_task(payload: TaskCreate) -> Task:
     return store.add(payload)
+
+
+@app.patch("/tasks/{task_id}", response_model=Task)
+def update_task(task_id: int, payload: TaskUpdate) -> Task:
+    task = store.update(task_id, payload)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
 
 
 @app.get("/tasks/{task_id}", response_model=Task)

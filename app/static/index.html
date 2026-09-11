@@ -25,6 +25,7 @@
   .pill { font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid #30363d; color:#8b949e; }
   .filters { display:flex; gap:8px; margin-bottom:12px; }
   .filters button { background:#21262d; border-color:#30363d; font-weight:500; }
+  button.edit { background:#21262d; border-color:#30363d; }
 </style>
 </head>
 <body>
@@ -64,9 +65,29 @@ async function load() {
     if (t.status === "done") li.className = "done";
     li.innerHTML = `<span class="title"></span>
                     <span class="pill">${t.priority}</span>
-                    <button data-id="${t.id}">Done</button>`;
+                    <button class="edit">Edit</button>
+                    <button class="done">Done</button>`;
     li.querySelector(".title").textContent = t.title;
-    li.querySelector("button").onclick = async () => {
+    li.querySelector(".edit").onclick = async () => {
+      const title = prompt("Title", t.title);
+      if (title === null) return;
+      const description = prompt("Description", t.description);
+      if (description === null) return;
+      const priority = prompt("Priority (low, medium, high)", t.priority);
+      if (priority === null) return;
+      const response = await fetch(`/tasks/${t.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, priority }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.detail?.[0]?.msg || error.detail || "Unable to update task");
+        return;
+      }
+      load();
+    };
+    li.querySelector(".done").onclick = async () => {
       await fetch(`/tasks/${t.id}/complete`, { method: "POST" });
       load();
     };
