@@ -57,6 +57,12 @@ class TaskStore:
         task.status = "done"
         return task
 
+    def stats(self) -> dict[str, int]:
+        total = len(self._tasks)
+        done = sum(1 for task in self._tasks.values() if task.status == "done")
+        open_tasks = sum(1 for task in self._tasks.values() if task.status == "open")
+        return {"total": total, "open": open_tasks, "done": done}
+
     def clear(self) -> None:
         self._tasks.clear()
         self._next_id = 1

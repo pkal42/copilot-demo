@@ -23,6 +23,11 @@ def create_task(payload: TaskCreate) -> Task:
     return store.add(payload)
 
 
+@app.get("/tasks/stats")
+def task_stats() -> dict[str, int]:
+    return store.stats()
+
+
 @app.get("/tasks/{task_id}", response_model=Task)
 def get_task(task_id: int) -> Task:
     task = store.get(task_id)

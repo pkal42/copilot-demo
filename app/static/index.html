@@ -11,6 +11,7 @@
   main { width:100%; max-width:640px; }
   h1 { font-size:22px; margin:0 0 4px; }
   p.sub { color:#8b949e; margin:0 0 24px; font-size:14px; }
+  p.stats { color:#8b949e; margin:0 0 14px; font-size:13px; }
   form { display:flex; gap:8px; margin-bottom:20px; }
   input, select, button { font:inherit; border-radius:6px; border:1px solid #30363d;
          background:#161b22; color:#e6edf3; padding:8px 10px; }
@@ -31,6 +32,7 @@
 <main>
   <h1>Task Tracker</h1>
   <p class="sub">A tiny FastAPI app for the GitHub Copilot demo.</p>
+  <p id="stats" class="stats">Total: 0 · Open: 0 · Done: 0</p>
 
   <form id="new-task">
     <input id="title" placeholder="What needs doing?" autocomplete="off" />
@@ -56,8 +58,13 @@ let filter = "";
 
 async function load() {
   const qs = filter ? `?status=${filter}` : "";
-  const tasks = await (await fetch(`/tasks${qs}`)).json();
+  const [tasks, stats] = await Promise.all([
+    fetch(`/tasks${qs}`).then((r) => r.json()),
+    fetch("/tasks/stats").then((r) => r.json()),
+  ]);
   const list = document.getElementById("list");
+  const statsNode = document.getElementById("stats");
+  statsNode.textContent = `Total: ${stats.total} · Open: ${stats.open} · Done: ${stats.done}`;
   list.innerHTML = "";
   for (const t of tasks) {
     const li = document.createElement("li");
