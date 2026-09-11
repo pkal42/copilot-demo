@@ -54,11 +54,11 @@
 <script>
 let filter = "";
 
+async function loadStats() {}
+
 async function refreshView() {
   await load();
-  if (typeof loadStats === "function") {
-    await loadStats();
-  }
+  await loadStats();
 }
 
 async function load() {
@@ -68,8 +68,8 @@ async function load() {
   list.innerHTML = "";
   for (const t of tasks) {
     const li = document.createElement("li");
-    if (t.status === "done") li.className = "done";
     const isDone = t.status === "done";
+    if (isDone) li.className = "done";
     const action = isDone ? "Reopen" : "Done";
     const endpoint = isDone ? "reopen" : "complete";
     li.innerHTML = `<span class="title"></span>
