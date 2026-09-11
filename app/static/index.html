@@ -54,6 +54,13 @@
 <script>
 let filter = "";
 
+async function refreshView() {
+  await load();
+  if (typeof loadStats === "function") {
+    await loadStats();
+  }
+}
+
 async function load() {
   const qs = filter ? `?status=${filter}` : "";
   const tasks = await (await fetch(`/tasks${qs}`)).json();
@@ -62,13 +69,16 @@ async function load() {
   for (const t of tasks) {
     const li = document.createElement("li");
     if (t.status === "done") li.className = "done";
+    const isDone = t.status === "done";
+    const action = isDone ? "Reopen" : "Done";
+    const endpoint = isDone ? "reopen" : "complete";
     li.innerHTML = `<span class="title"></span>
                     <span class="pill">${t.priority}</span>
-                    <button data-id="${t.id}">Done</button>`;
+                    <button data-id="${t.id}">${action}</button>`;
     li.querySelector(".title").textContent = t.title;
     li.querySelector("button").onclick = async () => {
-      await fetch(`/tasks/${t.id}/complete`, { method: "POST" });
-      load();
+      await fetch(`/tasks/${t.id}/${endpoint}`, { method: "POST" });
+      await refreshView();
     };
     list.appendChild(li);
   }
@@ -84,14 +94,14 @@ document.getElementById("new-task").onsubmit = async (e) => {
     body: JSON.stringify({ title, priority }),
   });
   document.getElementById("title").value = "";
-  load();
+  await refreshView();
 };
 
 for (const b of document.querySelectorAll(".filters button")) {
-  b.onclick = () => { filter = b.dataset.filter; load(); };
+  b.onclick = async () => { filter = b.dataset.filter; await refreshView(); };
 }
 
-load();
+refreshView();
 </script>
 </body>
 </html>

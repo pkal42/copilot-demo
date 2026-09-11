@@ -39,6 +39,14 @@ def complete_task(task_id: int) -> Task:
     return task
 
 
+@app.post("/tasks/{task_id}/reopen", response_model=Task)
+def reopen_task(task_id: int) -> Task:
+    task = store.reopen(task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
     from pathlib import Path

@@ -57,6 +57,13 @@ class TaskStore:
         task.status = "done"
         return task
 
+    def reopen(self, task_id: int) -> Optional[Task]:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return None
+        task.status = "open"
+        return task
+
     def clear(self) -> None:
         self._tasks.clear()
         self._next_id = 1
