@@ -19,6 +19,12 @@ class Task(BaseModel):
     created_at: datetime
 
 
+class TaskStats(BaseModel):
+    open: int
+    done: int
+    total: int
+
+
 def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -63,6 +69,11 @@ class TaskStore:
             return None
         task.status = "open"
         return task
+
+    def stats(self) -> TaskStats:
+        open_count = sum(1 for task in self._tasks.values() if task.status == "open")
+        done_count = sum(1 for task in self._tasks.values() if task.status == "done")
+        return TaskStats(open=open_count, done=done_count, total=len(self._tasks))
 
     def clear(self) -> None:
         self._tasks.clear()

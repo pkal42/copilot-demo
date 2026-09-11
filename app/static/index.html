@@ -56,10 +56,8 @@
 let filter = "";
 
 async function loadStats() {
-  const tasks = await (await fetch("/tasks")).json();
-  const open = tasks.filter((t) => t.status === "open").length;
-  const done = tasks.filter((t) => t.status === "done").length;
-  document.getElementById("stats").textContent = `Open: ${open} • Done: ${done}`;
+  const stats = await (await fetch("/tasks/stats")).json();
+  document.getElementById("stats").textContent = `Open: ${stats.open} • Done: ${stats.done}`;
 }
 
 async function refreshView() {

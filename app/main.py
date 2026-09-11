@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
-from app.models import Task, TaskCreate, store
+from app.models import Task, TaskCreate, TaskStats, store
 
 app = FastAPI(title="Copilot Demo — Task Tracker", version="0.1.0")
 
@@ -21,6 +21,11 @@ def list_tasks(status: Optional[str] = None) -> list[Task]:
 @app.post("/tasks", response_model=Task, status_code=201)
 def create_task(payload: TaskCreate) -> Task:
     return store.add(payload)
+
+
+@app.get("/tasks/stats", response_model=TaskStats)
+def get_task_stats() -> TaskStats:
+    return store.stats()
 
 
 @app.get("/tasks/{task_id}", response_model=Task)
