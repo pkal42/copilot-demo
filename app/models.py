@@ -71,8 +71,13 @@ class TaskStore:
         return task
 
     def stats(self) -> TaskStats:
-        open_count = sum(1 for task in self._tasks.values() if task.status == "open")
-        done_count = sum(1 for task in self._tasks.values() if task.status == "done")
+        open_count = 0
+        done_count = 0
+        for task in self._tasks.values():
+            if task.status == "open":
+                open_count += 1
+            elif task.status == "done":
+                done_count += 1
         return TaskStats(open=open_count, done=done_count, total=len(self._tasks))
 
     def clear(self) -> None:
